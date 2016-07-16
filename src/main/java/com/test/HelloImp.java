@@ -1,6 +1,7 @@
 package com.test;
 
 import com.annotations.RPCprovider;
+import com.enums.RemoteType;
 import org.springframework.stereotype.Service;
 
 /**
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
  * @since 1.0
  */
 @Service
-//@RPCprovider
+@RPCprovider(remoteType = RemoteType.RMI,interfaceClass = Hello.class)
 public class HelloImp implements Hello {
     @Override
     public void sayHello() {
