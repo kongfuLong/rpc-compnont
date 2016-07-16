@@ -1,6 +1,8 @@
 package com.core;
 
+import com.annotations.RPCprovider;
 import com.core.aop.MethodIntecept;
+import com.core.remoteModules.RemoteFactory;
 import com.core.remoteModules.RemoteInterfaceModule;
 import com.core.zookeeper.ZookeeperRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,33 +23,21 @@ import java.net.UnknownHostException;
 public class RegisterCenter {
 
     @Autowired
-    private RemoteInterfaceModule rmiRemote;
+    private RemoteFactory remoteFactory;
     @Autowired
     private ZookeeperRegistry zookeeperRegistry;
 
-    private String host = "";
 
-    @PostConstruct
-    public void hostInit(){
-        try {
-            host = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+
+    public void register(Object bean,RPCprovider rpCprovider){
+        if(bean==null || rpCprovider==null){
+            throw new IllegalArgumentException();
         }
-    }
-
-    public void register(Object bean){
-        Class[] interfaceClasss = bean.getClass().getInterfaces();
-        if(interfaceClasss.length<=0){
-            throw new NullPointerException("远程服务必须要实现一个接口啊兄弟!");
-        }
-        Class interfaceClass = interfaceClasss[0];
-
-        String serviceName = Tools.serviceNameCreate(interfaceClass);
+        Class interfaceClass = rpCprovider.interfaceClass();
         //注册服务
-        String url = rmiRemote.register(bean,interfaceClass,serviceName,host);
+        String url = remoteFactory.getRemoteModule(rpCprovider.remoteType()).register(bean,interfaceClass);
         //写入zookeeper
-        zookeeperRegistry.doRegister(serviceName,url);
+        zookeeperRegistry.doRegister(Tools.serviceNameCreate(interfaceClass),url);
     }
 
     public Object proxy(Object bean) {

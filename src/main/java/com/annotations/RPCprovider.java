@@ -1,5 +1,7 @@
 package com.annotations;
 
+import com.enums.RemoteType;
+
 import java.lang.annotation.*;
 
 /**
@@ -11,5 +13,9 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RPCprovider {
+
+    Class interfaceClass();
+
+    RemoteType remoteType() default RemoteType.RMI;
 
 }

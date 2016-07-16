@@ -21,12 +21,19 @@
         </dependency>
 
 
-      <!--  &lt;!&ndash; https://mvnrepository.com/artifact/com.alibaba/dubbo &ndash;&gt;
+        <!-- https://mvnrepository.com/artifact/com.caucho/hessian -->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>dubbo</artifactId>
-            <version>2.5.3</version>
-        </dependency>-->
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <version>4.0.38</version>
+        </dependency>
+
+        <!--  &lt;!&ndash; https://mvnrepository.com/artifact/com.alibaba/dubbo &ndash;&gt;
+          <dependency>
+              <groupId>com.alibaba</groupId>
+              <artifactId>dubbo</artifactId>
+              <version>2.5.3</version>
+          </dependency>-->
 
         <!-- https://mvnrepository.com/artifact/com.101tec/zkclient -->
         <dependency>

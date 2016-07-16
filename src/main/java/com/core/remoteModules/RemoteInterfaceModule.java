@@ -8,7 +8,9 @@ package com.core.remoteModules;
 public interface RemoteInterfaceModule {
 
 
-    String register(Object bean,Class interfaceClass,String publishName,String host);
+    String register(Object bean,Class interfaceClass);
 
     Object convertObjectByUrl(String url,Class clazz);
+
+    String urlCreate(String host,int port,Class clazz);
 }

@@ -34,7 +34,7 @@ public class ProviderInit extends InstantiationAwareBeanPostProcessorAdapter {
                 if(annotationClass == RPCprovider.class){
                     logger.info("远程服务进入:{}",bean.getClass().getName());
                     //服务注册 地址注册到zookeeper
-                    registerCenter.register(bean);
+                    registerCenter.register(bean,(RPCprovider)annotation);
                 }else if(annotationClass == RPCconsumer.class){
                     //远程服务引用
                     return registerCenter.proxy(bean);

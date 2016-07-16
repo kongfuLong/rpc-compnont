@@ -1,5 +1,6 @@
 package com.core.remoteModules;
 
+import com.core.Tools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.remoting.rmi.RmiProxyFactoryBean;
 import org.springframework.remoting.rmi.RmiServiceExporter;
@@ -20,28 +21,29 @@ public class RmiModule implements RemoteInterfaceModule {
 
     private final int vistPort = 8899;//访问端口
 
+    public String serviceNameCreate(Class clazz){
+        return clazz.getName().replace(".","_");
+    }
 
     /**
      *
      * @param bean
      * @param interfaceClass
-     * @param publishName
-     * @param host
      * @return 接口注册 并返回url
      */
     @Override
-    public String register(Object bean,Class interfaceClass,String publishName,String host) {
+    public String register(Object bean,Class interfaceClass) {
         String url = null;
         RmiServiceExporter rmiServiceExporter = new RmiServiceExporter();
         try {
             //服务发布
-            rmiServiceExporter.setServiceName(publishName);
+            rmiServiceExporter.setServiceName(Tools.serviceNameCreate(interfaceClass));
             rmiServiceExporter.setServiceInterface(interfaceClass);
             rmiServiceExporter.setService(bean);
             rmiServiceExporter.setServicePort(dataPort);
             rmiServiceExporter.setRegistryPort(vistPort);
             rmiServiceExporter.prepare();
-            url = String.format("rmi://%s/%s", String.format("%s:%s", host, vistPort), publishName);
+            url = urlCreate(Tools.localHost(),vistPort,interfaceClass);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,6 +64,11 @@ public class RmiModule implements RemoteInterfaceModule {
         proxy.afterPropertiesSet();
         proxy.prepare();
         return proxy.getObject();
+    }
+
+    @Override
+    public String urlCreate(String host, int port, Class clazz) {
+        return String.format("rmi://%s/%s", String.format("%s:%s",host, port), Tools.serviceNameCreate(clazz));
     }
 
 }

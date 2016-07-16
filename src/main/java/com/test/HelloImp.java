@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  * @since 1.0
  */
 @Service
-@RPCprovider
+//@RPCprovider
 public class HelloImp implements Hello {
     @Override
     public void sayHello() {

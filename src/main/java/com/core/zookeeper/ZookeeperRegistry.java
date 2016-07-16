@@ -1,7 +1,9 @@
 package com.core.zookeeper;
 
 import com.core.Tools;
+import com.core.remoteModules.RemoteFactory;
 import com.core.remoteModules.RemoteInterfaceModule;
+import com.enums.RemoteType;
 import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
@@ -36,7 +38,7 @@ public class ZookeeperRegistry {
     private Lock                 lock      = new ReentrantLock();
 
     @Autowired
-    private RemoteInterfaceModule rmiModel;
+    private RemoteFactory remoteFactory;
     /**
      * 远程对象路由表
      * 接口对象-->实际远程对象列表   本地服务扫描到需要引用远程服务时候开始往map里面写数据
@@ -49,7 +51,7 @@ public class ZookeeperRegistry {
 
     @PostConstruct
     public void zkInit(){
-        zkClient = new ZkClient(ZOOKEEPER_URL);
+       // zkClient = new ZkClient(ZOOKEEPER_URL);
     }
 
     /**
@@ -114,7 +116,8 @@ public class ZookeeperRegistry {
         ArrayList objects = new ArrayList();
         for(String server : servers){
             String url = zkClient.readData(String.format("%s/%s",serviceNode,server));
-            objects.add(rmiModel.convertObjectByUrl(url,clazz));
+            //思路 根据url分析出使用哪种远程接口调用  暂时使用rmi
+            objects.add(remoteFactory.getRemoteModule(RemoteType.RMI).convertObjectByUrl(url, clazz));
         }
         return objects;
     }
@@ -123,13 +126,13 @@ public class ZookeeperRegistry {
 
     /**
      *
-     * @param serviceName
+     * @param nodeName
      * @param url
      *
      * 注册服务地址
      */
-    public void doRegister(String serviceName,String url){
-        if(StringUtils.isEmpty(serviceName) || StringUtils.isEmpty(url)){
+    public void doRegister(String nodeName,String url){
+        if(StringUtils.isEmpty(nodeName) || StringUtils.isEmpty(url)){
             throw new IllegalAccessError();
         }
         //判断根节点是否存在
@@ -137,7 +140,7 @@ public class ZookeeperRegistry {
             zkClient.createPersistent(ROOT);
         }
         //判断service节点
-        String serviceNode = String.format("%s/%s",ROOT,serviceName);
+        String serviceNode = String.format("%s/%s",ROOT,nodeName);
         if(!zkClient.exists(serviceNode)){
             zkClient.createPersistent(serviceNode);
         }
